@@ -1,0 +1,72 @@
+# Compiled files
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / IntelliJ
+.idea/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Build results
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Entity Framework Core Migrations history
+migrations/
+
+# User-specific files
+*.userprefs
+
+# Dotnet tools
+.dotnet/
+
+# Temporary files
+~$*
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Logs
+logs/
+*.log
+
+# Publish output
+publish/
+
+#environment variables
+.env
+
+# sql files
+dados_mysql/
