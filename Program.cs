@@ -2,6 +2,9 @@ using crudGus.Data;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 
+
+Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,23 +15,21 @@ builder.Services.AddSwaggerGen();
 
 var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// var dbHost = Environment.GetEnvironmentVariable("MYSQL_HOST");
-// var dbPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
-// var dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
-// var dbUser = Environment.GetEnvironmentVariable("MYSQL_USER");
-// var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+var dbHost = Environment.GetEnvironmentVariable("MYSQL_HOST");
+var dbPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
+var dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
+var dbUser = Environment.GetEnvironmentVariable("MYSQL_USER");
+var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
 
-// var finalConnectionString = rawConnectionString?
-//     .Replace("{MYSQL_DATABASE}", dbName)
-//     .Replace("{MYSQL_USER}", dbUser)
-//     .Replace("{MYSQL_PASSWORD}", dbPassword)
-//     .Replace("{MYSQL_HOST}", dbHost)
-//     .Replace("{MYSQL_PORT}", dbPort);
+var finalConnectionString = rawConnectionString?
+    .Replace("{MYSQL_DATABASE}", dbName)
+    .Replace("{MYSQL_USER}", dbUser)
+    .Replace("{MYSQL_PASSWORD}", dbPassword)
+    .Replace("{MYSQL_HOST}", dbHost)
+    .Replace("{MYSQL_PORT}", dbPort);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(rawConnectionString, ServerVersion.AutoDetect(rawConnectionString)));
-
-
+    options.UseMySql(finalConnectionString, ServerVersion.AutoDetect(finalConnectionString)));
 
 var app = builder.Build();
 
@@ -44,5 +45,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/", () =>
+{
+
+    return finalConnectionString;
+});
 
 app.Run();
