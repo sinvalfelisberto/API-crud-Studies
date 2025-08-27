@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using crudGus.Data;
 using crudGus.Models;
 using Microsoft.EntityFrameworkCore;
+using crudGus.Models.DTOs;
 
 namespace crudGus.Controllers;
 
@@ -17,12 +18,21 @@ public class PersonagensController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddPersonagem(Personagem personagem)
+    public async Task<IActionResult> AddPersonagem([FromBody] CreatedPersonagemDTO personagemDTO)
     {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var personagem = new Personagem
+        {
+            Nome = personagemDTO.Nome,
+            Tipo = personagemDTO.Tipo
+        };
+
         _appDbContext.Personagens.Add(personagem);
         await _appDbContext.SaveChangesAsync();
 
-        return Ok(personagem);
+        return Created("Personagem criado com sucesso", personagem);
     }
 
     [HttpGet]
@@ -42,16 +52,32 @@ public class PersonagensController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Personagem>> UpdatePersonagem(int id, Personagem updatedPersonagem)
+    public async Task<ActionResult<Personagem>> UpdatePersonagem(int id, [FromBody] UpdatedPersonagemDTO updatedPersonagem)
+    {
+        var personagem = await _appDbContext.Personagens.FindAsync(id);
+        if (personagem is null)
+            return NotFound("Personagem não encontrado");
+
+        //_appDbContext.Entry(personagem).CurrentValues.SetValues(updatedPersonagem);
+        if (updatedPersonagem.Nome is not null)
+            personagem.Nome = updatedPersonagem.Nome;
+        if (updatedPersonagem.Tipo is not null)
+            personagem.Tipo = updatedPersonagem.Tipo;
+
+        await _appDbContext.SaveChangesAsync();
+
+        return Ok(personagem);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePersonagem(int id)
     {
         var personagem = await _appDbContext.Personagens.FindAsync(id);
         if (personagem is null)
             return NotFound("Não encontrado");
 
-        personagem.Nome = updatedPersonagem.Nome;
-        personagem.Tipo = updatedPersonagem.Tipo;
-
+        _appDbContext.Personagens.Remove(personagem);
         await _appDbContext.SaveChangesAsync();
-        return Ok(personagem);
+        return StatusCode(200, "Deletado com sucesso");
     }
 }
